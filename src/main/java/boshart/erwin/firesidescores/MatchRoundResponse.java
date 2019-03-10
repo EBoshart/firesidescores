@@ -1,7 +1,5 @@
 package boshart.erwin.firesidescores;
 
-import java.util.List;
-
 public class MatchRoundResponse {
 
     public Team top;

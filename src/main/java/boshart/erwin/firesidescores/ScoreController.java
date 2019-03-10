@@ -22,8 +22,7 @@ public class ScoreController {
 
         @Override
         public String toString() {
-            return
-                    winner + ',' + loser + "\n";
+            return winner + ',' + loser + "\n";
         }
     }
 
@@ -33,12 +32,13 @@ public class ScoreController {
         this.scoreService = scoreService;
     }
 
-    @GetMapping(value = "/score/{id}", produces = MediaType.TEXT_PLAIN_VALUE)
-    public void getScore(@PathVariable  String id, HttpServletResponse response) {
-        List<ScoreDTO> scores = scoreService.getScores(id);
+    @GetMapping(value = "/score/{stageId}", produces = MediaType.TEXT_PLAIN_VALUE)
+    public void getScore(@PathVariable String stageId, HttpServletResponse response) {
+        List<ScoreDTO> scores = scoreService.getScores(stageId);
 
         try {
             PrintWriter writer = response.getWriter();
+            writer.write("winner,loser\n");
             scores.forEach(score -> writer.write(score.toString()));
         } catch (IOException e) {
             e.printStackTrace();

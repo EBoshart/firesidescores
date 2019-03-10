@@ -3,7 +3,6 @@ package boshart.erwin.firesidescores;
 import boshart.erwin.firesidescores.ScoreController.ScoreDTO;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -16,13 +15,16 @@ public class ScoreService {
 
     private static final String BASE_BATTLEFY_API_URL = "https://dtmwra1jsgyb0.cloudfront.net";
 
+    private final RestTemplate restTemplate;
+
+    public ScoreService() {
+        restTemplate = new RestTemplate();
+    }
 
     private List<MatchRoundResponse> getScoreByRound(String stageId, int round) {
-        RestTemplate restTemplate = new RestTemplate();
         String url = BASE_BATTLEFY_API_URL + "/stages/" + stageId + "/matches?roundNumber=" + round;
-        ResponseEntity<List<MatchRoundResponse>> res = restTemplate.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<List<MatchRoundResponse>>() {
-        });
-        return res.getBody();
+        var response = restTemplate.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<List<MatchRoundResponse>>() {});
+        return response.getBody();
 
     }
 
@@ -35,11 +37,10 @@ public class ScoreService {
                 return result;
             List<ScoreDTO> matchRoundResults = scoresByRound.stream().map(s -> {
                 ScoreDTO scoreDTO = new ScoreDTO();
-                if(s.top.winner) {
+                if (s.top.winner) {
                     scoreDTO.winner = s.top.team.name;
                     scoreDTO.loser = s.bottom.team != null ? s.bottom.team.name : null;
-                }
-                else {
+                } else {
                     scoreDTO.winner = s.bottom.team.name;
                     scoreDTO.loser = s.top.team != null ? s.top.team.name : null;
                 }
@@ -50,5 +51,6 @@ public class ScoreService {
             round++;
         }
     }
+
 
 }
